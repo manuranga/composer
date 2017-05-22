@@ -29,6 +29,14 @@ class ReturnStatement extends Statement {
         super();
         this._expression = _.get(args, 'expression', '');
         this.type = "ReturnStatement";
+        this.whiteSpaceDescriptor = {
+            regions: {
+                0: "",
+                1: "",
+                2: "",
+                3: "\n"
+            }
+        }
     }
 
     setExpression(expression, options) {
@@ -46,7 +54,10 @@ class ReturnStatement extends Statement {
     }
 
     getReturnExpression() {
-        return "return " + this.getExpression();
+        const expression = this.getExpression();
+
+
+        return "return" + (expression ? " " : "") + expression;
     }
 
     getExpression() {

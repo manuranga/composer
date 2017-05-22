@@ -42,8 +42,9 @@ class ReturnStatementVisitor extends AbstractStatementSourceGenVisitor {
     }
 
     endVisitReturnStatement(returnStatement) {
-        this.appendSource(";\n");
-        this.getParent().appendSource( '\n\n' + this.getIndentation() + this.getGeneratedSource());
+        const spaces = returnStatement.whiteSpaceDescriptor.regions;
+        this.appendSource(spaces[2] + ";" + spaces[3]);
+        this.getParent().appendSource((returnStatement.shouldCalculateIndentation ? this.getIndentation() : "") + this.getGeneratedSource());
         log.debug('End Visit Return Statement Definition');
     }
 
