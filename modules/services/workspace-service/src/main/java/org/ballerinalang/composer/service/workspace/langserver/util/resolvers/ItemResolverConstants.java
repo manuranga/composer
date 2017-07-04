@@ -82,6 +82,7 @@ public class ItemResolverConstants {
     public static final String RESOURCE_TYPE = "resource";
     public static final String KEYWORD_TYPE = "keyword";
     public static final String NONE = "none";
+    public static final String KEYWORD = "keyword";
     // Symbol Types Constants
 
     // Sorting priorities
