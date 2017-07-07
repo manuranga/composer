@@ -57,9 +57,15 @@ public class ItemResolverConstants {
 
     public static final String FUNCTION = "function";
     public static final String SERVICE = "service";
+    public static final String CONNECTOR = "connector";
+    public static final String STRUCT = "struct";
+    public static final String ANNOTATION = "annotation";
 
     public static final String FUNCTION_TEMPLATE = "function ${1:name} (${2}) {\n    ${3}\n}";
     public static final String SERVICE_TEMPLATE = "service<${1}> ${2:name}{\n    ${3}\n}";
+    public static final String CONNECTOR_TEMPLATE = "connector ${1}(message m){\n    ${2}\n}";
+    public static final String STRUCT_TEMPLATE = "struct ${1}{\n    ${2}\n}";
+    public static final String ANNOTATION_TEMPLATE = "annotation ${1}{\n    ${3}\n}";
 
     // End of Basic Constructs
 
