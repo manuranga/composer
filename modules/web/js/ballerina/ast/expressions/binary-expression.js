@@ -50,12 +50,14 @@ class BinaryExpression extends Expression {
             leftExpression.setParent(this, {doSilently: true});
             leftExpression.initFromJson(jsonNode.children[0]);
             this._leftExpression = leftExpression;
+            this.addChild(leftExpression);
         }
         if (!_.isNil(jsonNode.children[1])) {
             const rightExpression = ASTFactory.createFromJson(jsonNode.children[1]);
             rightExpression.setParent(this, {doSilently: true});
             rightExpression.initFromJson(jsonNode.children[1]);
             this._rightExpression = rightExpression;
+            this.addChild(rightExpression);
         }
     }
 
