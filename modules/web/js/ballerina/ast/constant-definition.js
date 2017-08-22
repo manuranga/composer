@@ -29,7 +29,7 @@ import ASTFactory from './ast-factory.js';
 class ConstantDefinition extends VariableDeclaration {
     constructor(args) {
         super({
-            type: 'Constant-Declaration',
+            type: 'ConstantDefinition',
             bType: _.get(args, 'bType'),
             identifier: _.get(args, 'identifier'),
         });

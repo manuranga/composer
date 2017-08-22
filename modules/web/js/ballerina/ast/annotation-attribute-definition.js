@@ -25,7 +25,7 @@ import ASTFactory from './ast-factory.js';
  * */
 class AnnotationAttributeDefinition extends ASTNode {
     constructor(args) {
-        super('AnnotationAttribute');
+        super('AnnotationAttributeDefinition');
         this._attributeName = _.get(args, 'attributeName');
         this._attributeType = _.get(args, 'attributeType');
         this._attributeValue = _.get(args, 'attributeValue', '');

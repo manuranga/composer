@@ -36,7 +36,7 @@ class AnnotationAttachment extends ASTNode {
      * @param {string} args.name The right hand side test of the annotation. Example: GET
      */
     constructor(args) {
-        super('Annotation-Attachment');
+        super('AnnotationAttachment');
 
         /**
          * The full package name. Example: ballerina.net.http.

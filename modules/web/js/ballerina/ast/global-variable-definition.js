@@ -27,7 +27,7 @@ import ASTFactory from './ast-factory.js';
  */
 class GlobalVariableDefinition extends ASTNode {
     constructor(args) {
-        super({type: 'Global-Varialbe-Definition'});
+        super('GlobalVariableDefinition');
         this.whiteSpace.defaultDescriptor.regions = {
             0: ' ',
             1: ' ',
