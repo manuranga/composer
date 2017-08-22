@@ -25,6 +25,15 @@ class ASTVisitor extends EventChannel {
 
     /**
      * @param node {ASTNode}
+     * @param {number} i - index of the left child
+     * @param {ASTNode} leftChild - the left child
+     * @param {ASTNode} rightChild - the right child
+     */
+    midVisit(node, i, leftChild, rightChild) {
+    }
+
+    /**
+     * @param node {ASTNode}
      */
     canVisit(node) {
         if (ASTFactory.isBallerinaAstRoot(node)) {

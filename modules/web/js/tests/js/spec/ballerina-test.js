@@ -17,12 +17,13 @@
  */
 /* eslint-env es6 */
 
-import {fetchConfigs, parseContent} from 'api-client/api-client';
-import BallerinaASTDeserializer from 'ballerina/ast/ballerina-ast-deserializer';
-import BallerinaASTRootVisitor from 'ballerina/visitors/source-gen/ballerina-ast-root-visitor';
 import fs from 'fs';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import path from 'path';
+import { fetchConfigs, parseContent } from 'api-client/api-client';
+import BallerinaASTDeserializer from 'ballerina/ast/ballerina-ast-deserializer';
+import DebuggingSourceGenVisitor from '../../../ballerina/visitors/source-gen-new/debugging-source-gen-visitor';
+import SourceGenVisitor from '../../../ballerina/visitors/source-gen-new/source-gen-visitor';
 
 const directory = process.env.DIRECTORY ? process.env.DIRECTORY : '';
 
@@ -32,7 +33,9 @@ function ballerinaASTDeserializer(fileContent) {
         parseContent(fileContent)
             .then((parsedJson) => {
                 const ASTModel = BallerinaASTDeserializer.getASTModel(parsedJson);
-                const sourceGenVisitor = new BallerinaASTRootVisitor();
+                const sourceGenVisitor = process.env.SOURCE_DEBUG === 'true' ?
+                    new DebuggingSourceGenVisitor(fileContent)
+                    : new SourceGenVisitor();
                 ASTModel.accept(sourceGenVisitor);
                 resolve(sourceGenVisitor.getGeneratedSource());
             })

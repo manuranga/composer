@@ -95,6 +95,10 @@ class ASTNode extends EventChannel {
         return this.children;
     }
 
+    hasChildren() {
+        return this.children.length > 0;
+    }
+
     getType() {
         return this.type;
     }
@@ -253,16 +257,21 @@ class ASTNode extends EventChannel {
         if (visitor.canVisit(this)) {
             visitor.beginVisit(this);
             visitor.visit(this);
-            _.forEach(this.children, (child) => {
+            const parent = this;
+            for (let i = 0; i < this.children.length; i++) {
+                const child = this.children[i];
                 if (child) {
                     visitor.visit(child);
                     // forward visitor down the hierarchy to visit children of current child
                     // if visitor doesn't support visiting children of current child, it will break
                     if (visitor.canVisit(child)) {
                         child.accept(visitor);
+                        if (i + 1 !== this.children.length) {
+                            visitor.midVisit(parent, i, child, this.children[i + 1]);
+                        }
                     }
                 }
-            });
+            }
             visitor.endVisit(this);
         }
     }
@@ -672,6 +681,50 @@ class ASTNode extends EventChannel {
      */
     getContentStartCursorPosition() {
         log.warn('Method need to override in particular node');
+    }
+
+    /**
+     * Tagged template literal generator function to generate source.
+     * @param {string[]} strings - static strings in template.
+     * @param {...object} args - values to be filled in to the template.
+     * @return {string} generated source.
+     */
+    s(strings, ...args) {
+        let result = '';
+        for (let i = 0; i < strings.length; i++) {
+            let appendStr = true;
+            const string = strings[i].trim();
+            if (i > 0) {
+                const arg = args[i - 1];
+                if (_.isNumber(arg)) {
+                    if (i === 1 && strings[i - 1] === '') {
+                        // throw Error();
+                    }
+                    result += this.getWSRegion(arg);
+                } else if (_.isString(arg)) {
+                    const getter = this[arg];
+                    if (_.isFunction(getter)) {
+                        const nodeProp = getter.apply(this);
+                        if (!_.isNil(nodeProp)) {
+                            if (_.isBoolean(nodeProp)) {
+                                if (nodeProp === false) {
+                                    appendStr = false;
+                                }
+                            } else if (nodeProp.getExpressionString) {
+                                result += nodeProp.getExpressionString();
+                            } else {
+                                result += nodeProp;
+                            }
+                        }
+                    }
+                }
+            }
+            if (appendStr) {
+                result += string;
+            }
+        }
+
+        return result;
     }
 }
 

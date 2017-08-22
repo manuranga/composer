@@ -73,6 +73,7 @@
     "backbone": "^1.3.3",
     "bootstrap": "^3.3.6",
     "brace": "^0.10.0",
+    "chalk": "^2.1.0",
     "classnames": "^2.2.5",
     "d3": "^4.1.1",
     "golden-layout": "github:deepstreamio/golden-layout",
