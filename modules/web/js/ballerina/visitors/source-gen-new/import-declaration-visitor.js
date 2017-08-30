@@ -31,7 +31,7 @@ class ImportDeclarationVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`import ${0} ${'getPackageName'} ${3} ; ${4}`;
     }
 
     /**

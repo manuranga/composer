@@ -15,7 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
+import AnnotatedBlockVisitor from './annotated-node-visitor';
+import ASTFactory from '../../ast/ast-factory.js';
 
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
 
@@ -23,16 +24,16 @@ import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
  * Class for function definition source generation.
  * @extends AbstractSourceGenVisitor
  */
-class FunctionDefinitionVisitor extends AbstractSourceGenVisitor {
+class FunctionDefinitionVisitor extends AnnotatedBlockVisitor {
 
     /**
-     * Generate starting part of the function definition.
-     * @param { FunctionDefinition } node - node to be generated.
+     * @param { ASTNode } node - node to be generated.
      * @return {string} generated source fragment.
      */
-    beginVisit(node) {
-        return node.s`function ${1} ${'getFunctionName'} ${2} ( ${3}`;
+    beginAnnotatedBlock(node) {
+        return node.s`function ${1} ${'getFunctionName'} ${2}`;
     }
+
 
     /**
      * Generate in-between children part of the parameter definition.
@@ -42,15 +43,19 @@ class FunctionDefinitionVisitor extends AbstractSourceGenVisitor {
      * @param {ASTNode} rightChild - the right child
      * @return {string} generated source fragment.
      */
-    midVisit(node, i, leftChild, rightChild) {
-        switch (i) {
-            case 0: // between ArgumentParameterDefinitionHolder ReturnParameterDefinitionHolder
-                return node.s`${4}`;
-            case 1: // after ReturnParameterDefinitionHolder
-                return node.s`${6} { ${7}`;
-            default:
-                return null;
+    midVisitAfterAnnotation(node, i, leftChild, rightChild) {
+        if (ASTFactory.isReturnParameterDefinitionHolder(leftChild)) {
+            return node.s`${6} { ${7}`;
         }
+        return null;
+        // switch (i) {
+        //     case 0: // between ArgumentParameterDefinitionHolder ReturnParameterDefinitionHolder
+        //         return node.s`${4}`;
+        //     case 1: // after ReturnParameterDefinitionHolder
+        //         return node.s`${6} { ${7}`;
+        //     default:
+        //         return null;
+        // }
     }
 
     /**

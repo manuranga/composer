@@ -49,7 +49,7 @@ class ActionInvocationStatementVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return node.s`; ${1}`;
     }
 
 }

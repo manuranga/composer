@@ -34,13 +34,22 @@ class BallerinaASTRootVisitor extends AbstractSourceGenVisitor {
         return null;
     }
 
+
     /**
      * Generate in-between children part of the parameter definition.
-     * @param { BallerinaASTRoot } node - node to be generated.
+     * @param { FunctionDefinition } node - node to be generated.
+     * @param {number} i - index of the left child
+     * @param {ASTNode} leftChild - the left child
+     * @param {ASTNode} rightChild - the right child
      * @return {string} generated source fragment.
      */
-    midVisit(node) {
-        return null;
+    midVisit(node, i, leftChild, rightChild) {
+        switch (i) {
+            case 0:
+                return node.s`${3}`;
+            default:
+                return null;
+        }
     }
 
     /**

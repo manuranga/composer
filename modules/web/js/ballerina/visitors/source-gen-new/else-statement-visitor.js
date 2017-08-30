@@ -31,7 +31,7 @@ class ElseStatementVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s` else { ${2}`;
     }
 
     /**
@@ -49,7 +49,7 @@ class ElseStatementVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return node.s` } ${3}`;
     }
 
 }

@@ -40,7 +40,7 @@ class ReturnStatementVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     midVisit(node) {
-        return null;
+        return ',';
     }
 
     /**

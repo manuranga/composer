@@ -31,7 +31,7 @@ class BasicLiteralExpressionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s` ${'isStringType'} " ${'getBasicLiteralValue'} ${'isStringType'} " ${1} `;
     }
 
     /**

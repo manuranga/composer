@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
+import AnnotatedBlockVisitor from './annotated-node-visitor';
 
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
 
@@ -23,24 +23,14 @@ import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
  * Class for service definition source generation.
  * @extends AbstractSourceGenVisitor
  */
-class ServiceDefinitionVisitor extends AbstractSourceGenVisitor {
+class ServiceDefinitionVisitor extends AnnotatedBlockVisitor {
 
     /**
-     * Generate starting part of the service definition.
-     * @param { ServiceDefinition } node - node to be generated.
+     * @param { ASTNode } node - node to be generated.
      * @return {string} generated source fragment.
      */
-    beginVisit(node) {
-        return null;
-    }
-
-    /**
-     * Generate in-between children part of the parameter definition.
-     * @param { ServiceDefinition } node - node to be generated.
-     * @return {string} generated source fragment.
-     */
-    midVisit(node) {
-        return null;
+    beginAnnotatedBlock(node) {
+        return node.s`service ${0} < ${1}  ${'getProtocolPkgName'} ${2} > ${3} ${'getServiceName'} ${4} { ${5}`;
     }
 
     /**
@@ -48,9 +38,10 @@ class ServiceDefinitionVisitor extends AbstractSourceGenVisitor {
      * @param { ServiceDefinition } node - node to be generated.
      * @return {string} generated source fragment.
      */
-    endVisit(node) {
-        return null;
+    endAnnotatedBlock(node) {
+        return node.s`} ${6}`;
     }
+
 
 }
 

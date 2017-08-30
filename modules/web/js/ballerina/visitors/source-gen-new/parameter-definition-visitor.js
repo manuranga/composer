@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
+import AnnotatedBlockVisitor from './annotated-node-visitor';
 
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
 
@@ -23,33 +23,15 @@ import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
  * Class for parameter definition source generation.
  * @extends AbstractSourceGenVisitor
  */
-class ParameterDefinitionVisitor extends AbstractSourceGenVisitor {
+class ParameterDefinitionVisitor extends AnnotatedBlockVisitor {
 
     /**
      * Generate starting part of the parameter definition.
      * @param { ParameterDefinition } node - node to be generated.
      * @return {string} generated source fragment.
      */
-    beginVisit(node) {
-        return node.s`${'getTypeName'} ${1} ${'getName'} ${2}`;
-    }
-
-    /**
-     * Generate in-between children part of the parameter definition.
-     * @param { ParameterDefinition } node - node to be generated.
-     * @return {string} generated source fragment.
-     */
-    midVisit(node) {
-        return null;
-    }
-
-    /**
-     * Generate ending part of the parameter definition.
-     * @param { ParameterDefinition } node - node to be generated.
-     * @return {string} generated source fragment.
-     */
-    endVisit(node) {
-        return null;
+    beginAnnotatedBlock(node) {
+        return node.s`${'getTypeName'} ${'isArray'} [] ${1} ${'getName'} ${2}`;
     }
 
 }

@@ -31,7 +31,7 @@ class AnnotationAttributeVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`${'getKey'} : `;
     }
 
     /**

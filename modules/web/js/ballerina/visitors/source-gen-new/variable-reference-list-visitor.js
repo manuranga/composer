@@ -36,11 +36,14 @@ class VariableReferenceListVisitor extends AbstractSourceGenVisitor {
 
     /**
      * Generate in-between children part of the parameter definition.
-     * @param { VariableReferenceList } node - node to be generated.
+     * @param { FunctionDefinition } node - node to be generated.
+     * @param {number} i - index of the left child
+     * @param {ASTNode} leftChild - the left child
+     * @param {ASTNode} rightChild - the right child
      * @return {string} generated source fragment.
      */
-    midVisit(node) {
-        return null;
+    midVisit(node, i, leftChild, rightChild) {
+        return ',' + node.getChildren()[i + 1].s`${0}`;
     }
 
     /**

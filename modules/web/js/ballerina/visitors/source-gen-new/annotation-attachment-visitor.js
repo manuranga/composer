@@ -31,7 +31,7 @@ class AnnotationAttachmentVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`@ ${0} ${'getPackageName'} ${'hasPackageName'} : ${'getName'} ${1} {`;
     }
 
     /**
@@ -40,7 +40,7 @@ class AnnotationAttachmentVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     midVisit(node) {
-        return null;
+        return ',';
     }
 
     /**
@@ -49,7 +49,7 @@ class AnnotationAttachmentVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return node.s` } ${3}`;
     }
 
 }

@@ -16,7 +16,7 @@
  * under the License.
  */
 import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
-
+import ASTFactory from '../../ast/ast-factory.js';
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
 
 /**
@@ -31,7 +31,12 @@ class ArgumentParameterDefinitionHolderVisitor extends AbstractSourceGenVisitor 
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        const parent = node.parent;
+        if (ASTFactory.isResourceDefinition(parent)) {
+            return '(' + parent.s`${2}`;
+        } else {
+            return '(' + parent.s`${3}`;
+        }
     }
 
     /**

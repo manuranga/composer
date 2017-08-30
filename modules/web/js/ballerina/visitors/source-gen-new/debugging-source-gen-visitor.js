@@ -21,6 +21,7 @@ import log from 'log';
 import chalk from 'chalk';
 import chai from 'chai';
 import Visitors from './components';
+import ASTNode from './../../ast/node';
 
 /**
  * Source generation for the Ballerina AST Root
@@ -34,6 +35,7 @@ class DebuggingSourceGenVisitor {
         this.level = 0;
         this.expected = expected;
         this.expectedPos = -1;
+        this.used = [];
     }
 
 
@@ -47,6 +49,9 @@ class DebuggingSourceGenVisitor {
             const visitedSource = visitor.beginVisit(node);
             if (visitedSource !== null) {
                 this.source += visitedSource;
+                this.used.push(true);
+            } else {
+                this.used.push(false);
             }
             this.logDebugInfo(visitedSource, node, chalk.blue, true, this.level, 'b');
         }
@@ -61,6 +66,10 @@ class DebuggingSourceGenVisitor {
             const visitedSource = visitor.midVisit(node, i, l, r);
             if (visitedSource !== null) {
                 this.source += visitedSource;
+                this.used.pop();
+                this.used.push(true);
+            } else {
+                this.noMid = true;
             }
             this.logDebugInfo(visitedSource, node, chalk.green, false, this.level - 1, i);
         }
@@ -74,7 +83,10 @@ class DebuggingSourceGenVisitor {
             const visitedSource = visitor.endVisit(node);
             if (visitedSource !== null) {
                 this.source += visitedSource;
+                this.used.pop();
+                this.used.push(true);
             }
+            // console.log(this.used.pop() ? '' : '>>> ' + node.type);
             this.logDebugInfo(visitedSource, node, chalk.magenta, false, this.level, 'e');
         }
     }
@@ -121,13 +133,17 @@ class DebuggingSourceGenVisitor {
         const propVals = [];
 
         const error = Symbol('Error');
+        const node = Symbol('Node');
+        const plain = Symbol('Plain');
         for (let i = 0; i < props.length; i++) {
             const getterName = props[i];
             const getter = p[getterName];
             try {
                 const got = getter.call(p);
                 if (!_.isObject(got) || _.isPlainObject(got)) {
-                    propVals.push([getterName, JSON.stringify(got)]);
+                    propVals.push([getterName, plain, JSON.stringify(got)]);
+                } else if (got instanceof ASTNode) {
+                    propVals.push([getterName, node, got.type]);
                 }
             } catch (e) {
                 propVals.push([getterName, error, 'Error(' + JSON.stringify(e.name) + ')']);
@@ -135,53 +151,94 @@ class DebuggingSourceGenVisitor {
         }
         return _.sortBy(propVals, (l) => {
             if (l[1] === error) {
+                return 1002;
+            } else if (l[1] === node) {
                 return 1001;
             }
             return (l[1] === undefined ? 1000 : String(l[1]).length);
-        }).map(o => o[0] + ' : ' + (o[1] === error ? o[2] : o[1])).join(', ');
+        }).map(o => o[0] + ' : ' + o[2]).join(', ');
     }
 
 
-    logDebugInfo(visitedSource, node, color, listProps, l, visitType) {
-        if (this.expected === undefined) {
-            return;
-        }
-        const whiteSpaceDescriptor = node.getWhiteSpaceDescriptor();
+    static findWS(whiteSpaceDescriptor, s = [], p = '') {
         const regions = whiteSpaceDescriptor.regions;
-        if (whiteSpaceDescriptor.children) {
-            throw new Error('not impl');
-        }
-        let wsI = -1;
-        let wsMatched = '';
         if (regions) {
             for (let i = 0; i < 20; i++) {
                 const ws = regions[i];
-                if (ws && (ws.indexOf('\t') >= 0 || ws.length > 10)) {
-                    wsI = i;
-                    wsMatched = ws;
+                if (ws && ws.length > 25) {
+                    s.push([p + '[' + i + ']', i, ws]);
                 }
             }
         }
+        if (whiteSpaceDescriptor.children) {
+            _.forEach(whiteSpaceDescriptor.children, (c, n) => {
+                DebuggingSourceGenVisitor.findWS(c, s, p + '.' + n);
+            });
+        }
+        return s;
+    }
+
+    lineNum(index) {
+        let lines = 1;
+        let chars = 1;
+        for (let i = 0; i < index; i++) {
+            const c = this.expected.charAt(i);
+            if (c === '\n') {
+                lines++;
+                chars = 1;
+            } else {
+                chars++;
+            }
+        }
+        return [lines, chars];
+    }
+
+    logDebugInfo(visitedSource, node, color, listProps, l, visitType) {
+        // return;
+        if (this.expected === undefined) {
+
+        }
+        const spaces = DebuggingSourceGenVisitor.findWS(node.getWhiteSpaceDescriptor());
+        // if (spaces.length > 1) {
+        //     throw new Error('no impel');
+        // }
+        const wsText = spaces.reduce((a, b) => a + (a === '' ? '' : ' or ') + b[0], '');
+        // const wsText = spaces.length > 0 ? spaces[0][0] : '';
 
         const space = ' '.repeat(l);
         const indexOf = this.expected.indexOf(visitedSource, this.expectedPos);
+        let line;
         let visitedColor = color;
         if (indexOf >= 0) {
             this.expectedPos = indexOf + visitedSource.length;
+            line = chalk.gray(this.lineNum(indexOf));
         } else {
-            visitedColor = color.bgBlack;
+            const lastIndexOf = this.expected.lastIndexOf(visitedSource, this.expectedPos);
+            if (lastIndexOf >= 0) {
+                this.expectedPos = lastIndexOf + visitedSource.length;
+                line = chalk.white(this.lineNum(lastIndexOf));
+            } else {
+                visitedColor = color.inverse;
+                line = '';
+            }
         }
         const props = listProps ? DebuggingSourceGenVisitor.objToStr(node) : '';
         const methodName = node.type + 'V.' + (_.isNumber(visitType) ? 'm(' + visitType : visitType + '(') + ')';
-        if (visitedSource !== null) {
-            const wsColor = (visitedSource.indexOf(wsMatched) < 0 ? chalk.white.bgRed : chalk.white.bgGreen);
+        if (!_.isNil(visitedSource)) {
+            const w = process.stdout.columns - wsText.length - methodName.length - l - visitedSource.length - 15;
+            const wsColor = (spaces.length > 0 && visitedSource.indexOf(spaces[0][2]) < 0 ?
+                chalk.white.bgRed : chalk.white.bgGreen);
             console.log(space,
                 methodName,
                 visitedColor(JSON.stringify(visitedSource)),
-                wsI >= 0 ? wsColor(' ' + wsI + ' ') : '',
-                chalk.black((props.length > 100) ? props.substring(0, 100) + '...' : props));
+                line,
+                wsColor(wsText),
+                chalk.black((props.length > w) ? props.substring(0, w) + '\u2026' : props));
         } else {
-            console.log(space, methodName, color.bold(listProps ? props : '-'));
+            console.log(space,
+                methodName,
+                color.bold(listProps ? props : '-'),
+                chalk.white.bgYellow(wsText));
         }
     }
 

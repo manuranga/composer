@@ -31,15 +31,21 @@ class IfStatementVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`if (`;
     }
 
     /**
      * Generate in-between children part of the parameter definition.
-     * @param { IfStatement } node - node to be generated.
+     * @param { FunctionDefinition } node - node to be generated.
+     * @param {number} i - index of the left child
+     * @param {ASTNode} leftChild - the left child
+     * @param {ASTNode} rightChild - the right child
      * @return {string} generated source fragment.
      */
-    midVisit(node) {
+    midVisit(node, i, leftChild, rightChild) {
+        if (i == 0) {
+            return node.s`) { ${4}`;
+        }
         return null;
     }
 
@@ -49,7 +55,7 @@ class IfStatementVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return node.s` } ${5}`;
     }
 
 }

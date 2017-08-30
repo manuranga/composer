@@ -31,7 +31,7 @@ class AnnotationAttributeValueVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`${'isArray'} [`;
     }
 
     /**
@@ -40,7 +40,7 @@ class AnnotationAttributeValueVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     midVisit(node) {
-        return null;
+        return node.s`${'isArray'} ,`;
     }
 
     /**
@@ -49,7 +49,7 @@ class AnnotationAttributeValueVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return node.s`${'isArray'} ]`;
     }
 
 }

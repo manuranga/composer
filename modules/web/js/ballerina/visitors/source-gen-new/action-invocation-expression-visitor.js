@@ -31,7 +31,7 @@ class ActionInvocationExpressionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s` ${'getActionConnectorName'} . ${'getActionName'} (`;
     }
 
     /**
@@ -49,7 +49,7 @@ class ActionInvocationExpressionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return node.s`)`;
     }
 
 }

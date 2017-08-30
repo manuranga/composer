@@ -31,16 +31,19 @@ class FunctionInvocationExpressionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`${'getPackageName'}  ${'hasPackageName'} : ${'getFunctionName'} (`;
     }
 
     /**
      * Generate in-between children part of the parameter definition.
-     * @param { FunctionInvocationExpression } node - node to be generated.
+     * @param { FunctionDefinition } node - node to be generated.
+     * @param {number} i - index of the left child
+     * @param {ASTNode} leftChild - the left child
+     * @param {ASTNode} rightChild - the right child
      * @return {string} generated source fragment.
      */
-    midVisit(node) {
-        return null;
+    midVisit(node, i, leftChild, rightChild) {
+        return ',' + node.getChildren()[i + 1].s`${0}`;
     }
 
     /**
@@ -49,7 +52,7 @@ class FunctionInvocationExpressionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     endVisit(node) {
-        return null;
+        return ')';
     }
 
 }

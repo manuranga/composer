@@ -31,7 +31,12 @@ class SimpleVariableReferenceExpressionVisitor extends AbstractSourceGenVisitor 
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return node.s`${'getVariableName'} ${3}`;
+        // return null;
+        // ${'hasVariableType'} ${'getVariableType'}
+        return node.s`${'getPackageName'}
+                      ${'hasPackageName'} :
+                      ${'getVariableName'}
+                      ${3}`;
     }
 
     /**

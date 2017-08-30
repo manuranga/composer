@@ -31,7 +31,9 @@ class PackageDefinitionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     beginVisit(node) {
-        return null;
+        return node.s`${'hasPackageName'} package` +
+            node.getParent().s`${1}` +
+            node.s`${'getPackageName'} ${'hasPackageName'} ;`;
     }
 
     /**

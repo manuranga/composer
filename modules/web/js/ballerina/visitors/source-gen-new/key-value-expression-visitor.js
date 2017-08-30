@@ -40,7 +40,7 @@ class KeyValueExpressionVisitor extends AbstractSourceGenVisitor {
      * @return {string} generated source fragment.
      */
     midVisit(node) {
-        return null;
+        return node.s`: ${2}`;
     }
 
     /**

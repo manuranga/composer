@@ -15,7 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
+import AnnotatedBlockVisitor from './annotated-node-visitor';
+import ASTFactory from '../../ast/ast-factory.js';
 
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
 
@@ -23,23 +24,29 @@ import AbstractSourceGenVisitor from './abstract-source-gen-visitor';
  * Class for resource definition source generation.
  * @extends AbstractSourceGenVisitor
  */
-class ResourceDefinitionVisitor extends AbstractSourceGenVisitor {
+class ResourceDefinitionVisitor extends AnnotatedBlockVisitor {
 
     /**
      * Generate starting part of the resource definition.
      * @param { ResourceDefinition } node - node to be generated.
      * @return {string} generated source fragment.
      */
-    beginVisit(node) {
-        return null;
+    beginAnnotatedBlock(node) {
+        return node.s`resource ${0} ${'getResourceName'} ${1}`;
     }
 
     /**
      * Generate in-between children part of the parameter definition.
-     * @param { ResourceDefinition } node - node to be generated.
+     * @param { FunctionDefinition } node - node to be generated.
+     * @param {number} i - index of the left child
+     * @param {ASTNode} leftChild - the left child
+     * @param {ASTNode} rightChild - the right child
      * @return {string} generated source fragment.
      */
-    midVisit(node) {
+    midVisitAfterAnnotation(node, i, leftChild, rightChild) {
+        if (ASTFactory.isArgumentParameterDefinitionHolder(leftChild)) {
+            return node.s`${3} { ${4}`;
+        }
         return null;
     }
 
@@ -48,8 +55,8 @@ class ResourceDefinitionVisitor extends AbstractSourceGenVisitor {
      * @param { ResourceDefinition } node - node to be generated.
      * @return {string} generated source fragment.
      */
-    endVisit(node) {
-        return null;
+    endAnnotatedBlock(node) {
+        return node.s`} ${5}`;
     }
 
 }
