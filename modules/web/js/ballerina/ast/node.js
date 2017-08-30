@@ -691,36 +691,48 @@ class ASTNode extends EventChannel {
      */
     s(strings, ...args) {
         let result = '';
+        let appendStr = true;
         for (let i = 0; i < strings.length; i++) {
-            let appendStr = true;
             const string = strings[i].trim();
             if (i > 0) {
-                const arg = args[i - 1];
+                let arg = args[i - 1];
                 if (_.isNumber(arg)) {
                     if (i === 1 && strings[i - 1] === '') {
                         // throw Error();
                     }
                     result += this.getWSRegion(arg);
                 } else if (_.isString(arg)) {
+                    let not = false;
+                    if (arg.startsWith('!')) {
+                        not = true;
+                        arg = arg.substring(1);
+                    }
                     const getter = this[arg];
                     if (_.isFunction(getter)) {
-                        const nodeProp = getter.apply(this);
-                        if (!_.isNil(nodeProp)) {
-                            if (_.isBoolean(nodeProp)) {
-                                if (nodeProp === false) {
-                                    appendStr = false;
+                        if (appendStr) {
+                            const nodeProp = getter.apply(this);
+                            if (!_.isNil(nodeProp)) {
+                                if (_.isBoolean(nodeProp)) {
+                                    if (nodeProp === not) {
+                                        appendStr = false;
+                                    }
+                                } else if (nodeProp.getExpressionString) {
+                                    result += nodeProp.getExpressionString();
+                                } else {
+                                    result += nodeProp;
                                 }
-                            } else if (nodeProp.getExpressionString) {
-                                result += nodeProp.getExpressionString();
-                            } else {
-                                result += nodeProp;
                             }
                         }
+                    } else {
+                        throw new Error('No function "' + arg + '" in ' + this.type);
                     }
                 }
             }
-            if (appendStr) {
-                result += string;
+            if (string.length > 0) {
+                if (appendStr) {
+                    result += string;
+                }
+                appendStr = true;
             }
         }
 
