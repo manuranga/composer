@@ -68,6 +68,10 @@ class FunctionInvocationExpression extends Expression {
         this.setAttribute('_packageName', packageName, options);
     }
 
+    hasPackageName() {
+        return !_.isNil(this._packageName);
+    }
+
     getPackageName() {
         return this._packageName;
     }

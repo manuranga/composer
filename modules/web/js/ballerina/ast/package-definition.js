@@ -49,6 +49,10 @@ class PackageDefinition extends ASTNode {
         }
     }
 
+    hasPackageName() {
+        return !_.isNil(this._packageName);
+    }
+
     /**
      * getter for package name
      * @returns {String}

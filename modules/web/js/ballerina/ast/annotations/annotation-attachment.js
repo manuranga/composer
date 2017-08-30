@@ -82,6 +82,10 @@ class AnnotationAttachment extends ASTNode {
         this.setAttribute('_packageName', packageName, options);
     }
 
+    hasPackageName() {
+        return !_.isNil(this._packageName);
+    }
+
     // eslint-disable-next-line require-jsdoc
     getPackageName() {
         return this._packageName;

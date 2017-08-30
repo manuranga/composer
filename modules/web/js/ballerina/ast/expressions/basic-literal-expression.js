@@ -61,6 +61,11 @@ class BasicLiteralExpression extends Expression {
         }
     }
 
+    isStringType() {
+        return this._basicLiteralType === 'string';
+    }
+
+
     getExpressionString(isTemplte) {
         if (this._basicLiteralType === 'string' && !isTemplte) {
             // Adding double quotes if it is a string.

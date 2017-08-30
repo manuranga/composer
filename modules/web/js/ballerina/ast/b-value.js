@@ -49,6 +49,11 @@ class BValue extends ASTNode {
     }
 
     // eslint-disable-next-line require-jsdoc
+    isStringType() {
+        return this._bType === 'string';
+    }
+
+    // eslint-disable-next-line require-jsdoc
     setStringValue(stringValue, options) {
         this.setAttribute('_stringValue', stringValue, options);
     }

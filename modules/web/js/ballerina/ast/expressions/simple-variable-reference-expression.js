@@ -59,6 +59,14 @@ class SimpleVariableReferenceExpression extends Expression {
 
     /**
      * Getter for Variable type
+     * @returns boolean type
+     */
+    hasVariableType() {
+        return !_.isNil(this.children[0]) && !_.isNil(this.children[0].getTypeName());
+    }
+
+    /**
+     * Getter for Variable type
      * @returns var type
      */
     getVariableType() {
@@ -78,6 +86,14 @@ class SimpleVariableReferenceExpression extends Expression {
      */
     getPackageName() {
         return this._packageName;
+    }
+
+    /**
+     * Get the package name
+     * @returns {string} package name
+     */
+    hasPackageName() {
+        return !_.isNil(this._packageName);
     }
 
     /**

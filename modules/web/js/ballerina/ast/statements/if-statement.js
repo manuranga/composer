@@ -109,6 +109,7 @@ class IfStatement extends ConditionalStatement {
             const condition = ASTFactory.createFromJson(jsonNode.condition);
             condition.initFromJson(jsonNode.condition);
             this.setCondition(condition);
+            this.addChild(condition, undefined, true, true);
             condition.setParent(this, {doSilently: true});
         }
         _.each(jsonNode.children, (childNode) => {
