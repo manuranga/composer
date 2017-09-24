@@ -317,9 +317,10 @@ public class TreeVisitor extends BLangNodeVisitor {
      * @return all visible symbols for current scope
      */
     private Map<Name, Scope.ScopeEntry> resolveAllVisibleSymbols(SymbolEnv symbolEnv) {
-        Map<Name, Scope.ScopeEntry> visibleSymbolEntries = symbolResolver.lookupAllVisibleSymbols(symbolEnv);
-        System.out.println(visibleSymbolEntries);
-        return  visibleSymbolEntries;
+//        Map<Name, Scope.ScopeEntry> visibleSymbolEntries = symbolResolver.lookupAllVisibleSymbols(symbolEnv);
+//        System.out.println(visibleSymbolEntries);
+//        return  visibleSymbolEntries;
+        return null;
     }
 
     /**

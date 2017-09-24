@@ -80,7 +80,7 @@ public class WorkspaceUtils {
                 "", "", "".getBytes(StandardCharsets.UTF_8)));
 
         PackageLoader packageLoader = PackageLoader.getInstance(context);
-        Set<PackageID> packages = packageLoader.listPackages();
+        Set<PackageID> packages = null;// packageLoader.listPackages();
         packages.stream().forEach(pkg -> {
             Name version = pkg.getPackageVersion();
             BLangIdentifier bLangIdentifier = new BLangIdentifier();

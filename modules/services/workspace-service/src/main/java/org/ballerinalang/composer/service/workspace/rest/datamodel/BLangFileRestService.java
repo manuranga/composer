@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ballerinalang.model.BLangPackage;
@@ -36,7 +37,6 @@ import org.ballerinalang.model.elements.PackageID;
 import org.ballerinalang.model.tree.Node;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.OperatorKind;
-import org.ballerinalang.model.tree.expressions.LiteralNode;
 import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.repository.PackageRepository;
@@ -52,6 +52,15 @@ import org.wso2.ballerinalang.compiler.util.CompilerContext;
 import org.wso2.ballerinalang.compiler.util.CompilerOptions;
 import org.wso2.ballerinalang.compiler.util.Name;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,15 +76,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import static org.ballerinalang.compiler.CompilerOptionName.SOURCE_ROOT;
 
@@ -129,8 +129,13 @@ public class BLangFileRestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBallerinaJsonDataModelGivenContent(BFile bFile) throws IOException {
-        String response = parseJsonDataModel(bFile);
-        return Response.ok(response, MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin", '*').build();
+        try {
+            String response = parseJsonDataModel(bFile);
+            return Response.ok(response, MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin", '*').build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Response.ok("{}", MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin", '*').build();
     }
 
     @OPTIONS
@@ -188,7 +193,7 @@ public class BLangFileRestService {
             // Registering custom PackageRepository to provide ballerina content without a file in file-system
             context.put(PackageRepository.class, new InMemoryPackageRepository(
                     new PackageID(names, new org.wso2.ballerinalang.compiler.util.Name("0.0.0")),
-                    filePath, fileName, content.getBytes(StandardCharsets.UTF_8)));
+                    "/tmp/x", fileName, content.getBytes(StandardCharsets.UTF_8)));
         }
 
         Compiler compiler = Compiler.getInstance(context);
@@ -211,7 +216,7 @@ public class BLangFileRestService {
         if (node == null) {
             return JsonNull.INSTANCE;
         }
-        List<Method> methods = Arrays.stream(node.getClass().getInterfaces())
+        List<Method> methods = ClassUtils.getAllInterfaces(node.getClass()).stream()
                 .flatMap(aClass -> Arrays.stream(aClass.getMethods()))
                 .collect(Collectors.toList());
         JsonObject nodeJson = new JsonObject();
@@ -222,9 +227,9 @@ public class BLangFileRestService {
             for (Whitespace whitespace : ws) {
                 JsonObject wsJson = new JsonObject();
                 wsJson.addProperty("ws", whitespace.getWs());
-                //wsJson.addProperty("i", whitespace.getIndex());
-                //wsJson.addProperty("text", whitespace.getPrevious());
-                //wsJson.addProperty("static", whitespace.isStatic());
+                wsJson.addProperty("i", whitespace.getIndex());
+                wsJson.addProperty("text", whitespace.getPrevious());
+                wsJson.addProperty("static", whitespace.isStatic());
                 wsJsonArray.add(wsJson);
             }
             nodeJson.add("ws", wsJsonArray);
@@ -289,7 +294,8 @@ public class BLangFileRestService {
                 } else if (prop instanceof TypeKind) {
                     nodeJson.addProperty(jsonName, prop.toString().toLowerCase());
                 } else if (prop instanceof String) {
-                    if (node instanceof LiteralNode) {
+                    if (node.getKind() == NodeKind.LITERAL) {
+                        // Special case: literal's value will be string escaped
                         nodeJson.addProperty(jsonName, '"' + StringEscapeUtils.escapeJava((String) prop) + '"');
                     } else {
                         nodeJson.addProperty(jsonName, (String) prop);
@@ -308,6 +314,9 @@ public class BLangFileRestService {
                     String message = "Node " + node.getClass().getSimpleName() +
                             " contains unknown type prop: " + jsonName + " of type " + prop.getClass();
                     logger.error(message);
+                } else if (node.getKind() == NodeKind.LITERAL) {
+                    // Special case: literal's value will be string escaped
+                    nodeJson.addProperty(jsonName, "null");
                 }
             }
         }

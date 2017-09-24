@@ -26,7 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.wso2.msf4j.MicroservicesRunner;
-import org.wso2.msf4j.example.StockQuoteService;
+//import org.wso2.msf4j.example.StockQuoteService;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class HttpClientTryItTest {
     @BeforeClass
     public void startService() {
         this.microservicesRunner = new MicroservicesRunner(this.microservicePort);
-        this.microservicesRunner.deploy(new StockQuoteService()).start();
+//        this.microservicesRunner.deploy(new StockQuoteService()).start();
     }
     
     /**

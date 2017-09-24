@@ -113,7 +113,7 @@ const config = [{
         contentBase: './public',
     },
     externals: {
-        'jsdom': 'window',
+        jsdom: 'window',
         'react-addons-test-utils': true,
         'react/addons': true,
         'react/lib/ExecutionEnvironment': true,
@@ -205,7 +205,7 @@ if (process.env.NODE_ENV === 'production') {
     config[0].plugins.push(new webpack.optimize.UglifyJsPlugin({
         sourceMap: true,
         mangle: {
-            keep_fnames: true
+            keep_fnames: true,
         },
     }));
 } else {
@@ -218,9 +218,21 @@ if (process.env.NODE_ENV === 'test') {
   // we run tests on nodejs. So compile for nodejs
     config[0].target = 'node';
     exportConfig = config[0];
-}
-
-if (process.env.NODE_ENV === 'electron-dev' || process.env.NODE_ENV === 'electron') {
+} else if (process.env.NODE_ENV === 'test-source-gen-dev') {
+    const testConfig = config[0];
+    testConfig.target = 'node';
+    testConfig.entry = './js/tests/js/spec/ballerina-test.js';
+    testConfig.output = {
+        path: path.resolve(__dirname, 'target'),
+        filename: 'ballerina-test.js',
+    };
+    testConfig.plugins = [
+        new webpack.DefinePlugin({
+            PRODUCTION: JSON.stringify(false),
+        }),
+    ];
+    exportConfig = testConfig;
+} else if (process.env.NODE_ENV === 'electron-dev' || process.env.NODE_ENV === 'electron') {
   // we run tests on nodejs. So compile for nodejs
     config[0].target = 'electron-renderer';
 

@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import EventChannel from 'event_channel';
-import SimpleBBox from '../view/simple-bounding-box';
+import EventChannel from "event_channel";
+import SimpleBBox from "../view/simple-bounding-box";
 
 /**
  * Base of all tree nodes.
@@ -193,13 +193,31 @@ class Node extends EventChannel {
                     return '';
                 }
             case 'Assignment':
-                return Node.join(node.variables, w, '') + '=' + w() +
-                    node.expression.getSource() + ';' + w();
+                if (node.declaredWithVar && node.variables && node.variables.length &&
+                    node.expression) {
+                    return 'var' + w() + Node.join(node.variables, w, '') +
+                        node.expression.getSource() + '=' + w() +
+                        ';' + w();
+                } else {
+                    return Node.join(node.variables, w, '') + '=' + w() +
+                        node.expression.getSource() + ';' + w();
+                }
             case 'BinaryExpr':
                 return node.leftExpression.getSource() + node.operatorKind +
                     w() + node.rightExpression.getSource();
             case 'SimpleVariableRef':
                 return node.variableName.value + w();
+            case 'ExpressionStatement':
+                return node.expression.getSource() + ';' + w();
+            case 'Invocation':
+                if (node.packageAlias.value && node.name.value &&
+                    node.argumentExpressions && node.argumentExpressions.length) {
+                    return node.packageAlias.value + w() + ':' + w() +
+                        node.name.value + w() + '(' + w() + Node.join(node.argumentExpressions, w, '') +
+                        ')' + w();
+                } else {
+                    return node.name.value + w() + '(' + w() + ')' + w();
+                }
             case 'VariableDef':
                 return node.variable.getSource() + ';' + w();
             case 'Return':
@@ -211,9 +229,18 @@ class Node extends EventChannel {
             case 'UserDefinedType':
                 return node.typeName.value + w();
             case 'RecordLiteralExpr':
-                return '{' + w() + '}' + w();
+                if (node.keyValuePairs && node.keyValuePairs.length) {
+                    return '{' + w() + Node.join(node.keyValuePairs, w, '') +
+                        '}' + w();
+                } else {
+                    return '{' + w() + '}' + w();
+                }
             case 'BuiltInRefType':
-                return node.typeKind + w();
+                if (node.typeKind) {
+                    return node.typeKind + w();
+                } else {
+                    return 'message' + w();
+                }
             case 'TypeCastExpr':
                 return '(' + w() + node.typeNode.getSource() + ')' +
                     w() + node.expression.getSource();
@@ -223,6 +250,8 @@ class Node extends EventChannel {
             case 'ArrayType':
                 return node.elementType.getSource() + '[' + w() + ']' +
                     w();
+            case 'RecordLiteralKeyValue':
+                return node.key.getSource() + ':' + w() + node.value.getSource();
             case 'Struct':
                 return 'struct' + w() + node.name.value + w() + '{' +
                     w() + Node.join(node.fields, w, ';', true) +
@@ -238,30 +267,30 @@ class Node extends EventChannel {
                     ')' + w() + '{' + w() + node.body.getSource() +
                     '}' + w();
             case 'If':
-                return 'if' + w() + '(' + w() + node.condition.getSource() +
-                    ')' + w() + '{' + w() + node.body.getSource() +
-                    '}' + w();
-            case 'ExpressionStatement':
-                return node.expression.getSource() + ';' + w();
-            case 'Invocation':
-                if (node.packageAlias) {
-                    return node.packageAlias.value + w() + ':' + w() +
-                        node.name.value + w() + '(' + w() + Node.join(node.argumentExpressions, w, '') +
-                        ')' + w();
+                if (node.condition && node.body && node.elseStatement) {
+                    return 'if' + w() + '(' + w() + node.condition.getSource() +
+                        ')' + w() + '{' + w() + node.body.getSource() +
+                        '}' + w() + node.elseStatement.getSource();
                 } else {
-                    return node.name.value + w() + '(' + w() + Node.join(node.argumentExpressions, w, '') +
-                        ')' + w();
+                    return 'if' + w() + '(' + w() + node.condition.getSource() +
+                        ')' + w() + '{' + w() + node.body.getSource() +
+                        '}' + w();
                 }
             case 'UnaryExpr':
                 return node.operatorKind + w() + node.expression.getSource();
             case 'Connector':
                 return 'connector' + w() + node.name.value + w() +
-                    '(' + w() + ')' + w() + Node.join(node.actions, w, '');
+                    '(' + w() + ')' + w() + '{' + w() + Node.join(node.actions, w, '') +
+                    '}' + w();
             case 'Action':
-                return node.name.value + w() + '(' + w() + Node.join(node.parameters, w, ',') +
-                    ')' + w() + '(' + w() + Node.join(node.returnParameters, w, '') +
+                return 'action' + w() + node.name.value + w() + '(' +
+                    w() + Node.join(node.parameters, w, ',') +
+                    ')' + w() + '(' + w() + Node.join(node.returnParameters, w, ',') +
                     ')' + w() + '{' + w() + node.body.getSource() +
                     '}' + w();
+            case 'TypeConversionExpr':
+                return node.typeName.getSource() + '<' + w() + '>' +
+                    w() + node.expression.getSource();
             // auto gen code - end
 
             case 'Identifier':

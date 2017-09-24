@@ -30,19 +30,21 @@ public class LangServerPackageRepository extends GeneralFSPackageRepository {
     }
 
     private PackageSource lookupPackageSource(PackageID pkgID) {
-        Path path = this.generatePath(pkgID);
-        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-            return null;
-        }
-        return new LangServerPackageSource(pkgID, path);
+//        Path path = this.generatePath(pkgID);
+//        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+//            return null;
+//        }
+//        return new LangServerPackageSource(pkgID, path);
+        return null;
     }
 
     private PackageSource lookupPackageSource(PackageID pkgID, String entryName) {
-        Path path = this.generatePath(pkgID);
-        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-            return null;
-        }
-        return new LangServerPackageSource(pkgID, path, entryName);
+//        Path path = this.generatePath(pkgID);
+//        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+//            return null;
+//        }
+//        return new LangServerPackageSource(pkgID, path, entryName);
+        return null;
     }
 
     @Override
@@ -93,6 +95,7 @@ public class LangServerPackageRepository extends GeneralFSPackageRepository {
          */
         public class LangServerPackageSourceEntry implements PackageSourceEntry {
 
+            private final String pkgPath = "";
             private String name;
 
             private byte[] code;
@@ -106,7 +109,6 @@ public class LangServerPackageRepository extends GeneralFSPackageRepository {
                     // TODO: Handle multiple files with the same name
                     if (contentMap.containsKey(name)) {
                         this.code = contentMap.get(name);
-                    } else {
                         this.code = Files.readAllBytes(basePath.resolve(pkgPath).resolve(name));
                     }
                 } catch (IOException e) {
@@ -117,7 +119,7 @@ public class LangServerPackageRepository extends GeneralFSPackageRepository {
 
             @Override
             public PackageID getPackageID() {
-                return pkgID;
+                return null;
             }
 
             @Override

@@ -1,5 +1,2 @@
-function testIfStmtWithIncompatibleType() {
-	if ("foo") {
-		int a = 5;
-	}
+function testIfStmtWithIncompatibleType(int i,int j)(int j) {
 }

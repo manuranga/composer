@@ -1,1 +1,1 @@
-const int variableEx = "not an int";
+const int variableEx = "not\" an int";

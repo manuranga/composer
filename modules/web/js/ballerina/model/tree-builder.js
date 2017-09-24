@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import _ from 'lodash';
-import Node from './tree/node';
+import _ from "lodash";
+import Node from "./tree/node";
 
 // TODO: Move this to a generic place.
 function requireAll(requireContext) {
